@@ -1,0 +1,85 @@
+@charset "utf-8";
+/*公共样式，与页面无关*/
+/*阴影*/
+.box-shadow-none {
+	box-shadow: 0 0 0 rgba(0, 0, 0, 0.5)
+}
+.box-shadow-small {
+	box-shadow: 0 3px 5px rgba(0, 0, 0, 0.5)
+}
+.box-shadow {
+	box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5)
+}
+.box-shadow-big {
+	box-shadow: 0 6px 9px rgba(0, 0, 0, 0.5)
+}
+/*圆角*/
+.radius-none {
+	border-radius: 0
+}
+.radius-small {
+	border-radius: 2px
+}
+.radius {
+	border-radius: 4px
+}
+.radius-big {
+	border-radius: 6px
+}
+.radius-rounded {
+	border-radius: 2em;
+	padding-left: 1em;
+	padding-right: 1em
+}
+.radius-circle {
+	border-radius: 50%
+}
+.clear-margin-bottom {
+	margin-bottom: 0px;
+}
+.clear-border-bottom {
+	border-bottom: none;
+}
+.text-overflow {
+	word-break: keep-all;
+	text-overflow: ellipsis;
+	-o-text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.base-border {
+	border: 1px solid #cfcfcf;
+}
+.base-border-top {
+	border-top: 1px solid #cfcfcf;
+}
+.base-border-bottom {
+	border-bottom: 1px solid #cfcfcf;
+}
+.base-border-left {
+	border-left: 1px solid #cfcfcf;
+}
+.base-border-right {
+	border-right: 1px solid #cfcfcf;
+}
+.none-border-top{
+	border-top:none;
+}
+.none-border-bottom{
+	border-bottom:none;
+}
+.none-border-left{
+	border-left:none;
+}
+.none-border-right{
+	border-right:none;
+}
+.text-align-right{
+	text-align: right;
+}
+.margin-top-10{
+	margin-top:10px;
+}
+.padding-20{
+	padding:20px;
+}

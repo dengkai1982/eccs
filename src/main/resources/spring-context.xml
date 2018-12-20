@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-4.0.xsd
+     http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+     http://www.springframework.org/schema/tx
+     http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+     http://www.springframework.org/schema/aop
+     http://www.springframework.org/schema/aop/spring-aop-4.0.xsd"
+>
+    <aop:aspectj-autoproxy/>
+    <context:component-scan base-package="kaiyi.app.eccs.service.*"/>
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql:///eccs?serverTimezone=Hongkong&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
+        <property name="maxIdle" value="20" />
+        <property name="maxTotal" value="50" />
+        <property name="initialSize" value="10" />
+        <property name="logAbandoned" value="true" />
+        <property name="maxWaitMillis" value="5000" />
+        <property name="validationQuery" value="SELECT 1" />
+        <property name="testOnBorrow" value="true"/>
+    </bean>
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="persistenceUnitName" value="eccs_unit" />
+        <property name="dataSource" ref="dataSource"/>
+        <property name="persistenceXmlLocation" value="classpath:META-INF/persistence_source.xml" />
+        <property name="loadTimeWeaver">
+            <bean class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver"/>
+        </property>
+    </bean>
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="persistenceUnitName" value="eccs_unit"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <bean id="springContextHolder" class="kaiyi.puer.web.springmvc.SpringContextHolder"/>
+    <bean id="cipherOperator" class="kaiyi.puer.crypt.cipher.CipherOperator">
+        <constructor-arg type="java.lang.String" value="MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCQ/YgZg4KA1VSJMvLFuyX+hzflb+IzjupSuCYY5lhxDX7aIyW2WtxFdncnCmeqvwqA56tGq6mbdQwnfkCqI7JCj39JbYwFU1uwgWlOtXDOhblLgkHJb8MtTE8H4LOg8ltIr4AdNnJOo+z8/htNgbp/bIy5nh3rZat3vLXRv1QM2U8PJRz499SjfReFkrauEWPRBGNrtG3UZG04Skft3g6IHBiMxJsOfTvN1z/cPga52DOtbYhC0vnO5q6RWq/KHzLEfXBJKQrBiFmUIjXNhiebEqNizi9VAe8xZ4zb6GXgkAUuuhZpZ3ZeM4rsSgq8r7EaN+RIgZdEy0eFgWfSHLA5AgMBAAECggEABM/VN3uM1je+QXtmYTeP0D2ulje7WxiwICSqZwMmBkJ7ZkPqWX30d32yAKKwxBLpB1Qo9AR4cYdV6u2eucbLgLgAcnBnSDn2/gmddBZDcycu+hmNk2DZKmSw7sL/UyUX8Haamt2Wt5NrJw5L26ulg9sXZIWh2pEaOrQRmK9v26lB0pYurIQNtElUlyz8t5o8UyeYUPPxcMPwBAyY1mlQ7eYx17zq9CNqruqd6M08DVJVUo9g2x/eBXr/+J6Ev93LH3MF4MM6jEJn9ZrNBQ4NSFmydLZ1eL/P9nLEFGbUEEhrhtVrVQPet/bws9JuJUDwbMS3DPluDM2omoMllOuJcQKBgQDF1dAdrxnqooA3QLOzo5GI5J7Isd6D/FmuSFHEBLYVoJhIjE+eDJbeALNNS4yY68LKtRExgNnFbsUAw2nSy1mWz3ZyqNJb0LEyGkm4mziiVuQXvzhLDMRA8CyrJWnzEi1FT+NaIi6qk3t4AvocwNU2euu3gfJIitm6ODqdmOvpRQKBgQC7nlGrwZnbXnA81xsNVE25GOW5vAqY5ltlmpC3WF2ambMoo4BS7DMCx3SX4tTfyr4eH/GI9Ph7MNAtM7HZiVwmdns9rlUd4CHeYdzjYMlNbbuTAYVkUQj8BksuFMiLoMdJ52/2fTkQE/gkehGrZvOWUQKD6TmeQ85PuVsGAfmIZQKBgQCyYTupyDyCB8u8BicCDrYmzJ0vMNIGB/+E2ciACg90KL2mjH0tcQSHX/JL+5bmO44D4IeELz4setg++/PrEVfSV3XhpL8n8mATYQif37WNCvPXRZ+oa/Z45xYfqziA5x7SpFnG55NUUm69o1GJo4Wb/fGUISMoranr8s9HUp9EUQKBgQCSIvwMY40a4JFd4lKw7DRp82mkZUJ/3BXeqykDlnG6ZPO2uLvQWyhUhtVbJRSYiAvT3R++hMky80+Dldt2zNYZI3pVDgBAd/8Jf4KVHSNPCyTqmWm0PKZZ3/EZIJkgoQf5maqM/PbAfj1u9CHlNxiOweTKqJP3oWsGkCLFKC6cPQKBgESMEuYu6T6jPW8//4XFx3L8388+npJsnwhaWG6u6U7hJbZglp7qmdhdHz+iXtAXif433Wh4fgnBeMKEwY834JMc27xmNnlQws+9ztQzrWqQ3eiQ3klbi212Hz97HKYaYxnu/Aimrvgvk7jBhCD26s9ENn42ziHQjZHX5MQzHgCW"/>
+        <constructor-arg type="java.lang.String" value="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkP2IGYOCgNVUiTLyxbsl/oc35W/iM47qUrgmGOZYcQ1+2iMltlrcRXZ3Jwpnqr8KgOerRqupm3UMJ35AqiOyQo9/SW2MBVNbsIFpTrVwzoW5S4JByW/DLUxPB+CzoPJbSK+AHTZyTqPs/P4bTYG6f2yMuZ4d62Wrd7y10b9UDNlPDyUc+PfUo30XhZK2rhFj0QRja7Rt1GRtOEpH7d4OiBwYjMSbDn07zdc/3D4GudgzrW2IQtL5zuaukVqvyh8yxH1wSSkKwYhZlCI1zYYnmxKjYs4vVQHvMWeM2+hl4JAFLroWaWd2XjOK7EoKvK+xGjfkSIGXRMtHhYFn0hywOQIDAQAB"/>
+    </bean>
+    <bean id="validateAnnotationScanner" class="kaiyi.puer.commons.validate.ValidateAnnotationScanner">
+        <property name="scanPackages">
+            <list>
+                <value>kaiyi.app.eccs.entity</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="accessControlReader" class="kaiyi.puer.commons.access.AccessControlReader">
+        <property name="scanPackages">
+            <list>
+                <value>kaiyi.app.eccs.controller</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="executerQueue" class="kaiyi.puer.commons.exec.ExecuterQueue"/>
+    <bean id="threadExecuterQueue" class="kaiyi.puer.commons.exec.ThreadExecuterQueue"/>
+    <bean id="applicationRuntimeService" init-method="initApplication" class="kaiyi.app.eccs.ApplicationRuntimeService">
+        <property name="cipherOperator" ref="cipherOperator"/>
+        <property name="accessControlReader" ref="accessControlReader"/>
+        <property name="executerQueue" ref="executerQueue"/>
+        <property name="springContextHolder" ref="springContextHolder"/>
+        <property name="threadExecuterQueue" ref="threadExecuterQueue"/>
+        <property name="validateAnnotationScanner" ref="validateAnnotationScanner"/>
+        <property name="updateMenus" value="true"/>
+    </bean>
+</beans>

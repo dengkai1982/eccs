@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-4.0.xsd
+       http://www.springframework.org/schema/mvc  
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd">   
+	<context:component-scan base-package="kaiyi.app.eccs.controller"/>
+	<mvc:annotation-driven>   
+	   <mvc:argument-resolvers> 
+	        <bean class="kaiyi.puer.web.springmvc.WebPageHandlerMethodArgumentResolver"></bean>
+	    </mvc:argument-resolvers>  
+	</mvc:annotation-driven>
+	<!-- 视图解释类 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" 
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF" /> 
+		<property name="suffix" value=".jsp" />
+	</bean>
+	<mvc:interceptors>
+		<bean class="kaiyi.app.eccs.controller.interceptor.ChangeMenuInterceptor"/>
+		<bean class="kaiyi.app.eccs.controller.interceptor.LoginInterceptor">
+			<property name="excludeUrl">
+			    <list>
+			        <value>/mgr/master/login</value>
+				 </list>
+			</property>
+    	</bean>
+	</mvc:interceptors>
+	<!-- 处理文件上传 --> 
+	<bean id="multipartResolver"  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="gbk" /> <!-- 默认编码 (ISO-8859-1) -->
+		<property name="maxInMemorySize" value="10240000" />  <!--最大内存大小 default 10240,in bytes -->
+		<property name="uploadTempDir" value="/uploadTempDir/" /> <!--上传后的目录名 (WebUtils#TEMP_DIR_CONTEXT_ATTRIBUTE) -->
+		<property name="maxUploadSize" value="-1" /> <!-- 最大文件大小，-1为无限止(-1),in bytes -->
+	</bean>
+</beans>
