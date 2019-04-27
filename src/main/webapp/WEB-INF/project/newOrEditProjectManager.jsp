@@ -46,8 +46,15 @@
             <div class="form-group">
                 <label for="rate" class="col-sm-1 required">提成比例</label>
                 <div class="col-md-6 ref_contractAmount">
-                    <input type="number" class="form-control" value="${entity.rate}" placeholder="请填写0-100的提成百分比"
+                    <input type="number" class="form-control" value="${entity.rateInteger}" placeholder="请填写0-100的提成百分比"
                            validate="required:提成比例必须填写" id="rate" name="rate">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="rate" class="col-sm-1 required">计提比列</label>
+                <div class="col-md-6 ref_contractAmount">
+                    <input type="number" class="form-control" value="${entity.proportionInteger}" placeholder="请填写0-100的提成百分比"
+                           validate="required:计提比例必须填写" id="proportion" name="proportion">
                 </div>
             </div>
             <div class="form-group">
@@ -94,7 +101,7 @@
         });
         $('select.chosen-select').on('change', function(e,v){
             if(v.deselected){
-                postJSON("${contextPath}/master/projectManager/unbindEmployee${suffix}",{
+                postJSON("${contextPath}/project/projectManager/unbindEmployee${suffix}",{
                     employeeId:v.deselected,
                     projectId:"${entity.id}"
                 },"正在删除参与人员",function(result){

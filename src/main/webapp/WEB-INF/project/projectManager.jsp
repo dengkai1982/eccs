@@ -92,17 +92,24 @@
         $('#remoteDataGrid').datagrid({
             dataSource: {
                 cols:[
-                    {name: 'projectName',sort:false,label:'项目名称',width:240},
-                    {name: 'contractNumber',sort:false,label:'合同编号',width:180},
-                    {name: 'projectType',sort:true,label:'项目类型',width:180},
-                    {name: 'rate',sort:true,label:'提成比例',width:100,valueOperator:{
-                        getter: function(dataValue) {
-                            return dataValue+"%";
-                        }
-                    }},
-                    {name: 'contractAmount',sort:true,label:'合同金额',width:120},
-                    {name: 'transferredAmount',sort:true,label:'实际到账金额',width:120},
-                    {name: 'createTime',sort:true,label:'创建时间',width:180},
+                    {name: 'projectName',sort:true,label:'项目名称'},
+                    {name: 'contractNumber',sort:true,label:'合同编号'},
+                    {name: 'projectType',sort:true,label:'项目类型'},
+                    {name: 'contractAmount',sort:true,label:'合同金额'},
+                    {name: 'transferredAmount',sort:true,label:'到账金额'},
+                    {name: 'rate',sort:true,label:'提成比例',valueOperator:{
+                            getter: function(dataValue) {
+                                return dataValue+"%";
+                            }
+                        }},
+                    {name: 'proportion',sort:true,label:'计提比列',valueOperator:{
+                            getter: function(dataValue) {
+                                return dataValue+"%";
+                            }
+                        }},
+                    {name: 'commissionAmount',sort:true,label:'计提金额'},
+                    {name: 'finishCommission',sort:true,label:'累计提成'},
+                    {name: 'createTime',sort:true,label:'创建时间'},
                     {name: 'oper', label: '操作',sort:false,html:true,width:140}
                 ],
                 remote: function(params) {
@@ -157,10 +164,10 @@
                     recPerPage: parseInt('${pagination.maxResult}')
                 },
                 fixedLeftUntil:1,    // 固定左侧第一列
-                fixedRightFrom: 7  // 从第12列开始固定到右侧
+                fixedRightFrom: 11  // 从第12列开始固定到右侧
             },
             width:'100%',
-            height:400
+            height:getDataGridHeight()
         });
     }
 </script>

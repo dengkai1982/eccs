@@ -1,5 +1,7 @@
 package kaiyi.app.eccs.test;
 
+import kaiyi.app.eccs.entity.ProjectManagement;
+import kaiyi.app.eccs.service.ProjectManagementService;
 import kaiyi.app.eccs.service.VisitorUserService;
 import kaiyi.puer.commons.bean.SpringSelector;
 import kaiyi.puer.commons.data.JavaDataTyper;
@@ -30,5 +32,11 @@ public class ImportData {
             put("realName",new JavaDataTyper("admin"));
             put("password",new JavaDataTyper("111111"));
         }});
+    }
+
+    @Test
+    public void transferredAmountChange() throws ServiceException {
+        ProjectManagementService projectManagementService=sel.getBean(ProjectManagementService.class);
+        projectManagementService.transferredAmountChange("15367309322550002");
     }
 }

@@ -20,25 +20,34 @@
     </div>
     <article class="main_center base-border">
         <form class="form-horizontal" id="new_or_edit_page_form">
-            <input type="hidden" name="projectManagementId">
+            <input type="hidden" name="projectManagementId" value="${requestScope.entity.projectManagement.id}">
+            <input type="hidden" name="editor" value="${requestScope.editor}">
+            <input type="hidden" name="flowId" value="${requestScope.entity.id}">
             <div class="form-group">
                 <label for="projectName" class="col-sm-1 required">收款项目</label>
                 <div class="col-md-6 ref_projectName">
                     <input type="text" class="form-control" readonly validate="required:必须制定收款项目" placeholder="请点击选择"
-                           id="projectName" name="projectName">
+                           id="projectName" name="projectName" value="${requestScope.entity.projectManagement.projectName}">
                 </div>
             </div>
             <div class="form-group">
                 <label for="amount" class="col-sm-1 required">收款金额</label>
                 <div class="col-md-6 ref_amount">
                     <input type="number" class="form-control"  validate="required:收款金额必须填写"
-                           id="amount" name="amount">
+                           id="amount" name="amount" value="<currency:convert value='${requestScope.entity.amount}'/>">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="amount" class="col-sm-1 required">收款时间</label>
+                <div class="col-md-6 ref_amount">
+                    <input type="text" class="form-control form-date" placeholder="请选择" readonly
+                           value="<fmt:formatDate value='${requestScope.entity.receivablesDate}' pattern='yyyy-MM-dd'/>" id="receivablesDate" name="receivablesDate">
                 </div>
             </div>
             <div class="form-group">
                 <label for="remark" class="col-sm-1">备注</label>
                 <div class="col-md-6 ref_amount">
-                    <textarea class="form-control" name="remark" rows="3" id="remark"></textarea>
+                    <textarea class="form-control" name="remark" rows="3" id="remark">${requestScope.entity.remark}</textarea>
                 </div>
             </div>
             <div class="form-group">
@@ -70,7 +79,7 @@
                 postJSON("${contextPath}${requestScope.commitUrl}${suffix}",$form,"正在处理请稍后",function(result){
                     $this.removeClass("disabled");;
                     if(result.code==SUCCESS){
-                        newOrUpdateFinish("消息","添加收款项成果,点击确认返回",false);
+                        newOrUpdateFinish("消息","添加收款项成功,点击确认返回",false);
                     }else{
                         bootbox.alert(result.msg);
                     }

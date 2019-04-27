@@ -29,10 +29,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Controller
 @RequestMapping(ProjectController.rootPath)
@@ -151,7 +149,7 @@ public class ProjectController extends ManagerController {
     private static final String ProjectManagerCommitUrl=rootPath+"/projectManager/commit";
     @RequestMapping(value="/projectManager/commit",method = RequestMethod.POST)
     public void projectManagerCommit(@IWebInteractive WebInteractive interactive, HttpServletResponse response) throws IOException {
-        JsonMessageCreator jmc=getSuccessMessage();
+         JsonMessageCreator jmc=getSuccessMessage();
         if(interactive.validateRequestParameter(applicationRuntimeService.getValidateReference(),ProjectManagement.class, h->{
             jmc.setError(h);
         })){
@@ -220,6 +218,8 @@ public class ProjectController extends ManagerController {
         generatorDataListPage(interactive,projectAmountFlowService,getEnableQueryExpress());
         return rootPath+"/projectReceivables";
     }
+
+
     private static final String ProjectReceivablesPage=rootPath+"/projectReceivables";
 
     private static final String ProjectReceivablesCommitUrl=rootPath+"/projectReceivables/commit";
@@ -233,18 +233,39 @@ public class ProjectController extends ManagerController {
             w.setRequestAttribute("backUrl",ProjectReceivablesPage);
             w.setRequestAttribute("commitUrl",ProjectReceivablesCommitUrl);
         });
+        interactive.setRequestAttribute("editor",false);
         return rootPath+"/receivablesEdit";
     }
+    @RequestMapping("/projectReceivables/editor")
+    @AccessControl(name = "修改收款", weight = 2.32f, detail = "修改收款记录", code = rootPath
+            + "/projectReceivables/editor", parent = rootPath+"/projectReceivables",defaultAuthor = true)
+    public String projectReceivablesEditor(@IWebInteractive WebInteractive interactive, HttpServletResponse response){
+        newOrEditPage(interactive,projectAmountFlowService,(w,c)->{
+            w.setRequestAttribute("backUrl",ProjectReceivablesPage);
+            w.setRequestAttribute("commitUrl",ProjectReceivablesCommitUrl);
+        });
+        interactive.setRequestAttribute("editor",true);
+        return rootPath+"/receivablesEdit";
+    }
+
     //提交收款记录
     @RequestMapping(value="/projectReceivables/commit",method = RequestMethod.POST)
     public void projectReceivablesCommit(@IWebInteractive WebInteractive interactive, HttpServletResponse response) throws IOException {
         String projectManagementId=interactive.getStringParameter("projectManagementId","");
         Currency amount=interactive.getCurrency("amount");
         String remark=interactive.getStringParameter("remark","");
+        Date receivablesDate=interactive.getDateParameter("receivablesDate",new SimpleDateFormat("yyyy-MM-dd"));
         JsonMessageCreator jmc=getSuccessMessage();
+        boolean editor=interactive.getBoolean("editor","true",false);
+        String flowId=interactive.getStringParameter("flowId","");
         try {
-            projectManagementService.contractAdmission(projectManagementId,amount.getNoDecimalPoint().intValue(),
-                    getLoginedUser(interactive),remark);
+            if(editor){
+                projectAmountFlowService.modify(flowId,amount.getNoDecimalPoint().intValue(),getLoginedUser(interactive),remark,receivablesDate);
+                projectManagementService.transferredAmountChange(projectManagementId);
+            }else{
+                projectManagementService.contractAdmission(projectManagementId,amount.getNoDecimalPoint().intValue(),
+                        getLoginedUser(interactive),remark,receivablesDate);
+            }
         } catch (ServiceException e) {
             catchServiceException(jmc,e);
         }
@@ -256,11 +277,12 @@ public class ProjectController extends ManagerController {
         String flowId=interactive.getStringParameter("flowId","");
         JsonMessageCreator jmc=getSuccessMessage();
         try {
-            projectManagementService.deleteAdmission(flowId,getLoginedUser(interactive));
+            ProjectManagement pm=projectManagementService.deleteAdmission(flowId,getLoginedUser(interactive));
+            projectManagementService.transferredAmountChange(pm.getId());
         } catch (ServiceException e) {
             catchServiceException(jmc,e);
         }
-        interactive.writeUTF8Text(getSuccessMessage().build());
+        interactive.writeUTF8Text(jmc.build());
     }
     //查询项目参与人员
     @RequestMapping("/queryProjectParticipateEmployee")
@@ -349,11 +371,13 @@ public class ProjectController extends ManagerController {
             items.add(item);
         }
         try{
+            ProjectManagement pm;
             if(grant==null){
-                projectExtractGrantService.newProjectExtractGrant(projectAmountFlowId,items);
+                pm=projectExtractGrantService.newProjectExtractGrant(projectAmountFlowId,items);
             }else{
-                projectExtractGrantService.modifyExtractGranItem(grant.getId(),items);
+                pm=projectExtractGrantService.modifyExtractGranItem(grant.getId(),items);
             }
+            projectManagementService.transferredAmountChange(pm.getId());
         }catch(ServiceException e){
             catchServiceException(jmc,e);
         }
@@ -362,7 +386,9 @@ public class ProjectController extends ManagerController {
     @RequestMapping(value="/deleteExtractGrantItem",method=RequestMethod.POST)
     public void deleteExtractGrantItem(@IWebInteractive WebInteractive interactive, HttpServletResponse response) throws IOException {
         String itemId=interactive.getStringParameter("itemId","");
-        extractGrantItemService.deleteById(itemId);
+        String grantId=extractGrantItemService.deleteById(itemId);
+        String projectManagementId=projectExtractGrantService.deleteExtractGrantItem(grantId);
+        projectManagementService.transferredAmountChange(projectManagementId);
         interactive.writeUTF8Text(getSuccessMessage().build());
     }
 }

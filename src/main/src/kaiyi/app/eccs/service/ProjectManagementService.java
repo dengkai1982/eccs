@@ -6,6 +6,8 @@ import kaiyi.app.eccs.entity.VisitorUser;
 import kaiyi.puer.db.orm.DatabaseQuery;
 import kaiyi.puer.db.orm.ServiceException;
 
+import java.util.Date;
+
 public interface ProjectManagementService extends DatabaseQuery<ProjectManagement> ,DatabaseFastOper<ProjectManagement> {
     /**
      * 合同资金入账
@@ -13,12 +15,13 @@ public interface ProjectManagementService extends DatabaseQuery<ProjectManagemen
      * @param amount
      * @throws ServiceException
      */
-    void contractAdmission(String id, int amount, VisitorUser operMan,String remark)throws ServiceException;
+    void contractAdmission(String id, int amount, VisitorUser operMan, String remark,
+                           Date receivablesDate)throws ServiceException;
     /**
      * 移除资金入账记录
      * @param flowId
      */
-    void deleteAdmission(String flowId,VisitorUser operMan)throws ServiceException;
+    ProjectManagement deleteAdmission(String flowId,VisitorUser operMan)throws ServiceException;
     /**
      * 加入工程参与人员
      * @param projectId
@@ -26,5 +29,10 @@ public interface ProjectManagementService extends DatabaseQuery<ProjectManagemen
      * @param  isJoin true 加入
      */
     void employeeJoin(String projectId,String employeeId,boolean isJoin)throws ServiceException;
+
+    /**
+     * 改变合同入账资金
+     */
+    void transferredAmountChange(String entityId);
 
 }

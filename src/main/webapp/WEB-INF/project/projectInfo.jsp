@@ -14,26 +14,36 @@
                 <td class="left_column">项目类型</td>
                 <td class="right_column">${entity.projectType}</td>
             </tr>
-            <td class="left_column">合同金额</td>
-            <td class="right_column"><currency:convert value="${entity.contractAmount}"/></td>
-            <td class="left_column">到账金额</td>
-            <td class="right_column"><currency:convert value="${entity.transferredAmount}"/></td>
-            <td class="left_column">全部到账</td>
-            <td class="right_column">
-                <c:choose>
-                    <c:when test="${entity.contractAmount==entity.transferredAmount}">
-                        <span class="text-blue">全部到账</span>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="text-red">剩余 <currency:convert value="${entity.contractAmount-entity.transferredAmount}"/> 未到账</span>
-                    </c:otherwise>
-                </c:choose>
-            </td>
+            <tr>
+                <td class="left_column">合同金额</td>
+                <td class="right_column"><currency:convert value="${entity.contractAmount}"/></td>
+                <td class="left_column">到账金额</td>
+                <td class="right_column"><currency:convert value="${entity.transferredAmount}"/></td>
+                <td class="left_column">全部到账</td>
+                <td class="right_column">
+                    <c:choose>
+                        <c:when test="${entity.contractAmount==entity.transferredAmount}">
+                            <span class="text-blue">全部到账</span>
+                        </c:when>
+                        <c:otherwise>
+                            <span class="text-red">剩余 <currency:convert value="${entity.contractAmount-entity.transferredAmount}"/> 未到账</span>
+                        </c:otherwise>
+                    </c:choose>
+                </td>
+            </tr>
             <tr>
                 <td class="left_column">提成比例</td>
-                <td class="right_column">${entity.rate}%</td>
+                <td class="right_column">${entity.rateInteger}%</td>
                 <td class="left_column">项目参与人员</td>
                 <td class="right_column" colspan="3">${requestScope.joinEmployees}</td>
+            </tr>
+            <tr>
+                <td class="left_column">计提比例</td>
+                <td class="right_column">${entity.proportionInteger}%</td>
+                <td class="left_column">计提金额</td>
+                <td class="right_column"><currency:convert value='${entity.commissionAmount}'/></td>
+                <td class="left_column">已完成提成</td>
+                <td class="right_column"><currency:convert value='${entity.finishCommission}'/></td>
             </tr>
         </table>
     </table>

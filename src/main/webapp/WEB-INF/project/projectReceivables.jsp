@@ -95,7 +95,7 @@
                                 }
                             }
                         }},
-                    {name: 'createTime',sort:true,label:'收款时间',width:180},
+                    {name: 'receivablesDate',sort:true,label:'收款时间',width:180},
                     {name: 'amount',sort:true,label:'收款金额',width:120},
                     {name: 'operMan',sort:true,label:'操作员',width:120,valueOperator:{
                             getter: function(dataValue) {
@@ -106,8 +106,8 @@
                                 }
                             }
                         }},
-                    {name: 'remark',sort:true,label:'备注',width:400},
-                    {name: 'oper', label: '操作',sort:false,html:true,width:140}
+                    {name: 'remark',sort:true,label:'备注',width:getDataGridLastWidth()},
+                    {name: 'oper', label: '操作',sort:false,html:true,width:220}
                 ],
                 remote: function(params) {
                     var requestParams=$("#searchQueryForm").formToJson();
@@ -138,6 +138,15 @@
                             showName:"删除记录"
                         },$);
                         editor+=getTemplateHtml("operAction",{
+                            href:"${contextPath}/project/projectReceivables/editor${suffix}?id="+d.id+
+                            "&${paginationCurrentPage}="+getPaginationCurrentPage(),
+                            classStyle:"text-primary margin_right",
+                            title:"编辑修改",
+                            entityId:d.id,
+                            access:"",
+                            showName:"编辑修改"
+                        },$);
+                        editor+=getTemplateHtml("operAction",{
                             href:"${contextPath}/project/projectReceivables/extractGrant${suffix}?id="+d.id+
                             "&${paginationCurrentPage}="+getPaginationCurrentPage(),
                             classStyle:"text-primary margin_right",
@@ -163,7 +172,7 @@
                 fixedRightFrom: 8  // 从第12列开始固定到右侧
             },
             width:'100%',
-            height:400
+            height:getDataGridHeight()
         });
         //查询项目
         $("#projectName").click(function(){
@@ -179,7 +188,7 @@
                     if(result.code==SUCCESS){
                         bootbox.alert({
                             title:"消息",
-                            message: "删除收款项成果,点击确认返回",
+                            message: "删除收款项成功,点击确认返回",
                             callback: function () {
                                 window.location.reload();
                             }

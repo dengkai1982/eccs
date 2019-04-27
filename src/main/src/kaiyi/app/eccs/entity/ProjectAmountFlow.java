@@ -1,6 +1,8 @@
 package kaiyi.app.eccs.entity;
 import kaiyi.puer.commons.bean.BeanSyntacticSugar;
 import kaiyi.puer.commons.data.Currency;
+import kaiyi.puer.commons.data.ICurrency;
+import kaiyi.puer.commons.time.DateTimeUtil;
 import kaiyi.puer.db.entity.LogicDeleteEntity;
 import kaiyi.puer.json.JsonCreator;
 import kaiyi.puer.json.JsonValuePolicy;
@@ -8,6 +10,7 @@ import kaiyi.puer.json.creator.ObjectJsonCreator;
 import kaiyi.puer.json.creator.StringJsonCreator;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * 项目资金入账流水
@@ -16,12 +19,8 @@ import javax.persistence.*;
 public class ProjectAmountFlow extends LogicDeleteEntity {
     public static final String TABLE_NAME="project_amount_flow";
     private static final long serialVersionUID = -2138462281459166289L;
-    //到账前金额
-    private int beforeAmount;
     //入账金额
     private int amount;
-    //到账后金额
-    private int afterAmount;
     //操作员
     private VisitorUser operMan;
     //备注信息
@@ -29,6 +28,12 @@ public class ProjectAmountFlow extends LogicDeleteEntity {
     //工程合同
     private ProjectManagement projectManagement;
 
+    private Date receivablesDate;
+    //计提比例
+    private int proportion;
+    //计提金额
+    @ICurrency
+    private int commissionAmount;
     @Override
     protected JsonValuePolicy convertJsonValuePolicy() {
         return new JsonValuePolicy<ProjectAmountFlow>() {
@@ -44,21 +49,15 @@ public class ProjectAmountFlow extends LogicDeleteEntity {
                     return new ObjectJsonCreator<ProjectManagement>(projectManagement,
                             BeanSyntacticSugar.getFieldString(ProjectManagement.class,projectManagement.fieldFilter()),
                             projectManagement.jsonFieldReplacePolicy(),projectManagement.jsonValuePolicy());
-                }else if(field.equals("amount")||field.equals("beforeAmount")||field.equals("afterAmount")){
+                }else if(field.equals("amount")){
                     Long currency=Long.parseLong(fieldValue.toString());
                     return new StringJsonCreator(Currency.parseForNoDecimalPoint(currency).toString());
+                }else if(field.equals("receivablesDate")){
+                    return new StringJsonCreator(DateTimeUtil.yyyyMMdd.format(entity.getReceivablesDate()));
                 }
                 return null;
             }
         };
-    }
-
-    public int getBeforeAmount() {
-        return beforeAmount;
-    }
-
-    public void setBeforeAmount(int beforeAmount) {
-        this.beforeAmount = beforeAmount;
     }
 
     public int getAmount() {
@@ -69,13 +68,6 @@ public class ProjectAmountFlow extends LogicDeleteEntity {
         this.amount = amount;
     }
 
-    public int getAfterAmount() {
-        return afterAmount;
-    }
-
-    public void setAfterAmount(int afterAmount) {
-        this.afterAmount = afterAmount;
-    }
 
     @ManyToOne(cascade = CascadeType.REFRESH,fetch = FetchType.EAGER)
     @JoinColumn(name="operMan")
@@ -102,6 +94,30 @@ public class ProjectAmountFlow extends LogicDeleteEntity {
 
     public void setProjectManagement(ProjectManagement projectManagement) {
         this.projectManagement = projectManagement;
+    }
+    @Temporal(TemporalType.DATE)
+    public Date getReceivablesDate() {
+        return receivablesDate;
+    }
+
+    public void setReceivablesDate(Date receivablesDate) {
+        this.receivablesDate = receivablesDate;
+    }
+
+    public int getProportion() {
+        return proportion;
+    }
+
+    public void setProportion(int proportion) {
+        this.proportion = proportion;
+    }
+
+    public int getCommissionAmount() {
+        return commissionAmount;
+    }
+
+    public void setCommissionAmount(int commissionAmount) {
+        this.commissionAmount = commissionAmount;
     }
 }
 

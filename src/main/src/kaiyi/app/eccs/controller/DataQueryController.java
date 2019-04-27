@@ -80,9 +80,9 @@ public class DataQueryController extends ManagerController {
             public QueryTransfor getTransfor(String field, JavaDataTyper data) {
                 switch (field){
                     case "startTime":
-                        return getStratDateQuery("createTime",data,DateTimeUtil.yyyyMMdd,LINK.AND);
+                        return getStratDateQuery("receivablesDate",data,DateTimeUtil.yyyyMMdd,LINK.AND);
                     case "endTime":
-                        return getEndDateQuery("createTime",data,DateTimeUtil.yyyyMMdd,LINK.AND);
+                        return getEndDateQuery("receivablesDate",data,DateTimeUtil.yyyyMMdd,LINK.AND);
                     case "projectManagementId":
                         ProjectManagement projectManagement=new ProjectManagement();
                         projectManagement.setId(data.stringValue());

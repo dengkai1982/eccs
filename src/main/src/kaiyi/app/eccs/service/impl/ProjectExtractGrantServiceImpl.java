@@ -5,6 +5,8 @@ import kaiyi.app.eccs.ServiceExceptionDefine;
 import kaiyi.app.eccs.entity.ExtractGrantItem;
 import kaiyi.app.eccs.entity.ProjectAmountFlow;
 import kaiyi.app.eccs.entity.ProjectExtractGrant;
+import kaiyi.app.eccs.entity.ProjectManagement;
+import kaiyi.app.eccs.service.ExtractGrantItemService;
 import kaiyi.app.eccs.service.ProjectAmountFlowService;
 import kaiyi.app.eccs.service.ProjectExtractGrantService;
 import kaiyi.puer.commons.collection.StreamCollection;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Service("projectExtractGrantService")
@@ -21,8 +24,10 @@ public class ProjectExtractGrantServiceImpl extends InjectDao<ProjectExtractGran
     private static final long serialVersionUID = 1520709186006839565L;
     @Resource
     private ProjectAmountFlowService projectAmountFlowService;
+    @Resource
+    private ExtractGrantItemService extractGrantItemService;
     @Override
-    public void newProjectExtractGrant(String projectAmountFlowId, Set<ExtractGrantItem> items) throws ServiceException {
+    public ProjectManagement newProjectExtractGrant(String projectAmountFlowId, Set<ExtractGrantItem> items) throws ServiceException {
         if(findByProjectAmountFlow(projectAmountFlowId)!=null){
             throw ServiceExceptionDefine.extractGrantExist;
         }
@@ -47,10 +52,11 @@ public class ProjectExtractGrantServiceImpl extends InjectDao<ProjectExtractGran
         grant.setTotalGrantAmount(totalGrantAmount);
         grant.setItems(items);
         saveObject(grant);
+        return amountFlow.getProjectManagement();
     }
 
     @Override
-    public void modifyExtractGranItem(String id, Set<ExtractGrantItem> items)throws ServiceException {
+    public ProjectManagement modifyExtractGranItem(String id, Set<ExtractGrantItem> items)throws ServiceException {
         ProjectExtractGrant grant=findForPrimary(id);
         if(grant==null){
             throw ServiceExceptionDefine.emptyAmountFlow;
@@ -78,6 +84,7 @@ public class ProjectExtractGrantServiceImpl extends InjectDao<ProjectExtractGran
         }
         grant.setTotalGrantAmount(totalGrantAmount);
         grant.setItems(grantItems);
+        return grant.getProjectManagement();
     }
 
     @Override
@@ -85,5 +92,25 @@ public class ProjectExtractGrantServiceImpl extends InjectDao<ProjectExtractGran
         ProjectAmountFlow flow=new ProjectAmountFlow();
         flow.setId(flowId);
         return signleQuery("projectAmountFlow",flow);
+    }
+
+    @Override
+    public String deleteExtractGrantItem(String grantId) {
+        ProjectExtractGrant grant=findForPrimary(grantId);
+        String projectManagementId=grant.getProjectManagement().getId();
+        if(grant!=null){
+            grant.getProjectManagement();
+            Set<ExtractGrantItem> items=grant.getItems();
+            int amount=0;
+            for(ExtractGrantItem ite:items){
+                amount+=ite.getAmount();
+            }
+            if(amount>0){
+                grant.setTotalGrantAmount(amount);
+            }else{
+                deleteForPrimary(grantId);
+            }
+        }
+        return projectManagementId;
     }
 }

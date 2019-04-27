@@ -11,6 +11,7 @@ import kaiyi.puer.json.JsonValuePolicy;
 import kaiyi.puer.json.creator.StringJsonCreator;
 
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
  * 项目工程
@@ -33,6 +34,14 @@ public class ProjectManagement extends LogicDeleteEntity {
     private int transferredAmount;
     //初始提成比例
     private float rate;
+    //计提比例
+    private float proportion;
+    //提成金额
+    @ICurrency
+    private int commissionAmount;
+    //已完成提成金额
+    @ICurrency
+    private int finishCommission;
     @Override
     protected JsonValuePolicy convertJsonValuePolicy() {
         return new JsonValuePolicy<ProjectManagement>() {
@@ -97,5 +106,41 @@ public class ProjectManagement extends LogicDeleteEntity {
 
     public void setRate(float rate) {
         this.rate = rate;
+    }
+    @Transient
+    public int getRateInteger(){
+        return (int)rate;
+    }
+    @Transient
+    public int getProportionInteger() {
+        return (int)proportion;
+    }
+    @DataValidate(required = true,emptyHint = "计提比列必须必须填写",
+            numberArea = true,startArea = 0d,endArea = 100d,
+            validates = {
+                    @Validate(type = ValidateType.NUMBER,hint="不是有效的数值")
+            })
+    public float getProportion() {
+        return proportion;
+    }
+
+    public void setProportion(float proportion) {
+        this.proportion = proportion;
+    }
+
+    public int getCommissionAmount() {
+        return commissionAmount;
+    }
+
+    public void setCommissionAmount(int commissionAmount) {
+        this.commissionAmount = commissionAmount;
+    }
+
+    public int getFinishCommission() {
+        return finishCommission;
+    }
+
+    public void setFinishCommission(int finishCommission) {
+        this.finishCommission = finishCommission;
     }
 }

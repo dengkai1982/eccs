@@ -4,5 +4,7 @@ import kaiyi.app.eccs.entity.ExtractGrantItem;
 import kaiyi.puer.db.orm.DatabaseQuery;
 
 public interface ExtractGrantItemService extends DatabaseQuery<ExtractGrantItem> {
-    void deleteById(String id);
+    String deleteById(String id);
+
+    String totalCommission(String employeeId,String  projectManagementId);
 }

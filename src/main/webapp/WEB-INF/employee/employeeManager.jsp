@@ -93,10 +93,10 @@
                         }},
                     {name: 'jobDate',sort:true,label:'入职时间',width:180},
                     {name: 'exitDate',sort:true,label:'离职时间',width:180},
-                    {name: 'profressWages',sort:true,label:'专业技术职务工资',width:180},
-                    {name: 'reviewCheckWages',sort:true,label:'复核人员内部经营责任制考核',width:200},
+                    {name: 'profressWages',sort:true,label:'专业技术职务工资',width:240},
+                    {name: 'reviewCheckWages',sort:true,label:'复核人员内部经营责任制考核',width:240},
                     {name: 'operateCheckWages',sort:true,label:'经营协调等人员内部经营责任制考核',width:240},
-                    {name: 'oper', label: '操作',sort:false,html:true,width:80}
+                    {name: 'oper', label: '操作',sort:false,html:true}
                 ],
                 remote: function(params) {
                     var requestParams=$("#searchQueryForm").formToJson();
@@ -143,7 +143,7 @@
                 fixedRightFrom: 8  // 从第12列开始固定到右侧
             },
             width:'100%',
-            height:400
+            height:getDataGridHeight()
         });
     }
 </script>

@@ -137,7 +137,7 @@
                 fixedRightFrom: 6  // 从第12列开始固定到右侧
             },
             width:'100%',
-            height:400
+            height:getDataGridHeight()
         });
         //查询员工
         $("#employeeName").click(function(){

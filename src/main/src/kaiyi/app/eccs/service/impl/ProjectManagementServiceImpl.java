@@ -1,17 +1,20 @@
 package kaiyi.app.eccs.service.impl;
 
+import kaiyi.app.eccs.CurrencyUtils;
 import kaiyi.app.eccs.InjectDao;
 import kaiyi.app.eccs.ServiceExceptionDefine;
-import kaiyi.app.eccs.entity.Employee;
-import kaiyi.app.eccs.entity.ProjectAmountFlow;
-import kaiyi.app.eccs.entity.ProjectManagement;
-import kaiyi.app.eccs.entity.VisitorUser;
+import kaiyi.app.eccs.entity.*;
 import kaiyi.app.eccs.service.*;
+import kaiyi.puer.commons.collection.StreamCollection;
+import kaiyi.puer.commons.data.Currency;
 import kaiyi.puer.commons.data.JavaDataTyper;
 import kaiyi.puer.db.orm.ServiceException;
+import kaiyi.puer.db.query.CompareQueryExpress;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 @Service("projectManagementService")
@@ -36,7 +39,26 @@ public class ProjectManagementServiceImpl extends InjectDao<ProjectManagement> i
     }
 
     @Override
-    public void contractAdmission(String id, int amount,VisitorUser operMan,String remark) throws ServiceException {
+    protected void objectBeforePersistHandler(ProjectManagement projectManagement) throws ServiceException {
+        setCommisssion(projectManagement);
+    }
+
+    private void setCommisssion(ProjectManagement projectManagement){
+        int contractAmount=projectManagement.getContractAmount();
+        float proportion=projectManagement.getProportion();
+        Currency contractAmountCurrency=Currency.parseForNoDecimalPoint(contractAmount);
+        Currency commission=CurrencyUtils.computerPercentage(proportion,contractAmountCurrency);
+        projectManagement.setCommissionAmount(commission.getNoDecimalPoint().intValue());
+    }
+
+    @Override
+    protected void objectBeforeUpdateHandler(ProjectManagement projectManagement) throws ServiceException {
+        setCommisssion(projectManagement);
+    }
+
+    @Override
+    public void contractAdmission(String id, int amount,VisitorUser operMan,String remark,
+                                  Date receivablesDate) throws ServiceException {
         ProjectManagement pm=findForPrimary(id);
         if(pm==null){
             throw ServiceExceptionDefine.contractNotExist;
@@ -50,24 +72,23 @@ public class ProjectManagementServiceImpl extends InjectDao<ProjectManagement> i
             throw ServiceExceptionDefine.admissionGTContract;
         }
         pm.setTransferredAmount(transferredAmount+amount);
-        projectAmountFlowService.addFlow(pm,transferredAmount,amount,transferredAmount+amount,
-                operMan,remark);
+        projectAmountFlowService.addFlow(pm,amount,
+                operMan,remark,receivablesDate);
         updateObject(pm);
     }
 
+
+
     @Override
-    public void deleteAdmission(String flowId,VisitorUser operMan)throws ServiceException {
+    public ProjectManagement deleteAdmission(String flowId,VisitorUser operMan)throws ServiceException {
         if(projectExtractGrantService.findByProjectAmountFlow(flowId)!=null){
             throw ServiceExceptionDefine.extractGrantExist;
         }
         ProjectAmountFlow flow=projectAmountFlowService.findForPrimary(flowId);
         ProjectManagement management=flow.getProjectManagement();
         management.setTransferredAmount(management.getTransferredAmount()-flow.getAmount());
-        flow.setRemark(flow.getRemark()+",删除收款记录,操作人员:"+operMan.getRealName());
-        updateObject(management);
-        flow.setDeleted(true);
-        flow.setEnable(false);
-        em.merge(flow);
+        projectAmountFlowService.deleteForId(flowId);
+        return management;
     }
 
     @Override
@@ -84,6 +105,23 @@ public class ProjectManagementServiceImpl extends InjectDao<ProjectManagement> i
             participateEmployeeService.employeeBind(pm,employeeId);
         }else{
             participateEmployeeService.employeeUnbind(pm,employee);
+        }
+    }
+
+    @Override
+    public void transferredAmountChange(String entityId) {
+        //projectManagement
+        ProjectManagement projectManagement=findForPrimary(entityId);
+        if (Objects.nonNull(projectManagement)) {
+            Long amount=(Long)em.createQuery("select COALESCE(SUM(o.amount),0) from "+getEntityName(ProjectAmountFlow.class)
+                    +" o where o.projectManagement=:projectManagement").setParameter("projectManagement",projectManagement)
+                    .getSingleResult();
+            projectManagement.setTransferredAmount(amount.intValue());
+            Long commissionAmount=(Long)em.createQuery("select COALESCE(SUM(o.totalGrantAmount),0) from "+getEntityName(ProjectExtractGrant.class)
+                    +" o where o.projectManagement=:projectManagement").setParameter("projectManagement",projectManagement)
+                    .getSingleResult();
+            projectManagement.setFinishCommission(commissionAmount.intValue());
+            updateObject(projectManagement);
         }
     }
 }

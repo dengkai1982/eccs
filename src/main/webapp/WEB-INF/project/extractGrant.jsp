@@ -34,12 +34,18 @@
                     <tr>
                         <td class="left_column" style="width:100px;">入账金额</td>
                         <td class="right_column"><currency:convert value="${projectAmountFlow.amount}"/></td>
-                        <td class="left_column" style="width:100px;">到账时间</td>
+                        <td class="left_column" style="width:100px;">入账时间</td>
                         <td class="right_column"><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${projectAmountFlow.createTime}"/></td>
                         <td class="left_column" style="width:100px;">入账记录员</td>
                         <td class="right_column">${projectAmountFlow.operMan.realName}</td>
-                        <td class="left_column" style="width:140px;">已发放提成总额</td>
-                        <td class="right_column">
+                    </tr>
+                    <tr>
+                        <td class="left_column" style="width:100px;">计提比例</td>
+                        <td class="right_column">${projectAmountFlow.proportion}</td>
+                        <td class="left_column" style="width:100px;">计提金额</td>
+                        <td class="right_column" id="commissionAmountValue"><currency:convert value="${projectAmountFlow.commissionAmount}"/></td>
+                        <td class="left_column" style="width:140px;">累计提成</td>
+                        <td class="right_column" id="extractGrantValue">
                             <c:choose>
                                 <c:when test="${empty requestScope.extractGrant}">
                                     0.00
@@ -113,6 +119,9 @@
 <%@ include file="/WEB-INF/pageCommons.jsp"%>
 <script src="${contextPath}/js/commons.js" type="text/javascript"></script>
 <script type="text/javascript">
+    var commissionAmount=parseFloat($("#commissionAmountValue").html());
+    var totalGrantAmount=parseFloat($("#extractGrantValue").html());
+    var maybeGrant=commissionAmount-totalGrantAmount;
     function pageReady(doc){
         $("#addEmployeeItem").click(function(){
             var excludeEmployee=$("input[name='excludeEmployee']").val();
@@ -172,6 +181,13 @@
             flowAmount=flowAmount*rate;
             $(this).parent(".extractGrantItem").find(".amoutn_input").val(flowAmount.toFixed(2));
         })
+        $("#extractGrantContainer").on("keyup",".amoutn_input",function(){
+            var amount=parseFloat($(this).val());
+            var flowAmount=parseFloat("<currency:convert value="${projectAmountFlow.amount}"/>");
+            var rate=(amount/flowAmount)*100;
+            $(this).parent(".extractGrantItem").find(".rate_input").val(rate.toFixed(2));
+        })
+
         //删除提成
         $("#extractGrantContainer").on("click",".delete_extract_grant_item",function(){
             var extractGrantItem=$(this).parents(".extractGrantItem");
@@ -181,7 +197,13 @@
                 postJSON("${contextPath}/project/deleteExtractGrantItem${suffix}",{
                     itemId:dataId
                 },"正在删除请稍后",function(result){
-
+                    bootbox.alert({
+                        title:"消息",
+                        message: "已删除提成项,点击确认关闭",
+                        callback: function () {
+                            window.location.reload();
+                        }
+                    })
                 });
             }
             var employeeId=extractGrantItem.find("input[name='employeeId']").val();
@@ -204,17 +226,24 @@
             var grantItems={
                 grantItem:new Array()
             };
+            var grantAmount=0;
             $(".extractGrantItem").each(function(i,d){
                 var $this=$(d);
                 var employeeId=$this.find("input[name='employeeId']").val();
                 var rate=$this.find("input[name='rate']").val();
-                var amount=$this.find("input[name='amount']").val();
+                var amount=parseFloat($this.find("input[name='amount']").val());
                 grantItems.grantItem.push({
                     employeeId: employeeId,
                     rate: rate,
                     amount: amount
                 })
-            })
+                grantAmount+=amount;
+            });
+            if(grantAmount>maybeGrant){
+                toast("提成金额大于可计提金额");
+                $this.removeClass("disabled");
+                return;
+            }
             if(grantItems.grantItem.length==0){
                 toast("参与人员未指定");
                 $this.removeClass("disabled");

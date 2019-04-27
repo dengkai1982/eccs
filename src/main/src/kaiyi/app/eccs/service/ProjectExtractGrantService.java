@@ -2,6 +2,7 @@ package kaiyi.app.eccs.service;
 
 import kaiyi.app.eccs.entity.ExtractGrantItem;
 import kaiyi.app.eccs.entity.ProjectExtractGrant;
+import kaiyi.app.eccs.entity.ProjectManagement;
 import kaiyi.puer.db.orm.DatabaseQuery;
 import kaiyi.puer.db.orm.ServiceException;
 
@@ -12,18 +13,20 @@ public interface ProjectExtractGrantService extends DatabaseQuery<ProjectExtract
     /**
      * 新增提成发放记录
      */
-    void newProjectExtractGrant(String projectAmountFlowId, Set<ExtractGrantItem> items)throws ServiceException;
+    ProjectManagement newProjectExtractGrant(String projectAmountFlowId, Set<ExtractGrantItem> items)throws ServiceException;
 
     /**
      * 修改提成发放金额
      * @param id
      * @param items
      */
-    void modifyExtractGranItem(String id,Set<ExtractGrantItem> items)throws ServiceException;
+    ProjectManagement modifyExtractGranItem(String id,Set<ExtractGrantItem> items)throws ServiceException;
     /**
      * 根据收款项进行查找,杜绝一个收款项出现多个明细的情况
      * @param flowId
      * @return
      */
     ProjectExtractGrant findByProjectAmountFlow(String flowId);
+
+    String deleteExtractGrantItem(String grantId);
 }

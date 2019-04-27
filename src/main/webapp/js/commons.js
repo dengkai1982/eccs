@@ -207,3 +207,18 @@ function newOrUpdateFinish(title,message,isEdit){
         }
     });
 }
+
+function getDataGridHeight(){
+    var bodyHeight=$("body").height()
+    var dataGridTop=$("#remoteDataGrid").offset().top
+    var height=  bodyHeight-dataGridTop-120;
+    console.log(height);
+    return height;
+}
+function getDataGridLastWidth(){
+    if($("#remoteDataGrid").width()<1280){
+        return 400;
+    }else{
+        return 800;
+    }
+}

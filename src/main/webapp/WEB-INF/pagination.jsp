@@ -3,6 +3,9 @@
 <!-- 分页控件 -->
 <c:if test="${pagination.total>=0}">
 	<div class="tfoot clearfix">
+		<div id="tfoot_left" style="float:left;height:30px;line-height:30px;">
+
+		</div>
 		<div style="float: right; clear: none;" class="pager form-inline">
 			共 <strong class="text-primary" id="pagination_total">${pagination.total}</strong> 条记录，
 			<div class="dropdown dropup">
@@ -131,6 +134,9 @@
                     });
                     myDataGrid.search(new Date().getTime());
                     $(".icon-refresh").removeClass("icon-spin").css("color","#444");
+                    if(functionExist("otherLoad")){
+                        otherLoad();
+					}
                 }
 
                 $("#doResetFormAction").click(function(){

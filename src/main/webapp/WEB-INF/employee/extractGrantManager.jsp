@@ -127,7 +127,16 @@
                 fixedRightFrom: 8  // 从第12列开始固定到右侧
             },
             width:'100%',
-            height:400
+            height:getDataGridHeight()
+        });
+        otherLoad();
+    }
+    function otherLoad(){
+        var formToJson=$("#searchQueryForm").formToJson();
+        postJSON("${contextPath}/employee/extractGrantCount${suffix}",formToJson,"正在处理请稍后",function(result){
+            if(result.code==SUCCESS){
+                $("#tfoot_left").html("发放金额合计:"+result.body);
+            }
         });
     }
 </script>

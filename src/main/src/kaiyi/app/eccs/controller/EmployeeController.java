@@ -96,6 +96,15 @@ public class EmployeeController extends ManagerController {
         return rootPath+"/extractGrantManager";
     }
 
+    @RequestMapping("/extractGrantCount")
+    public void extractGrantCount(@IWebInteractive WebInteractive interactive, HttpServletResponse response) throws IOException {
+        String employeeId=interactive.getStringParameter("employeeId","");
+        String  projectManagementId=interactive.getStringParameter("projectManagementId","");
+        JsonMessageCreator jmc=getSuccessMessage();
+        jmc.setBody(extractGrantItemService.totalCommission(employeeId,projectManagementId));
+        interactive.writeUTF8Text(jmc.build());
+    }
+
 
     @RequestMapping("/extractGrantManager/new")
     @AccessControl(name = "新增工程款发放", weight = 1.21f, detail = "增加新的工程款发放记录", code = rootPath

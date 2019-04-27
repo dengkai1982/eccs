@@ -1,5 +1,8 @@
 @charset "utf-8";
 /*主题框架定义*/
+html,body{
+	height:100%;
+}
 body {
 	color: #141414;
 	background:#E5E5E5;
