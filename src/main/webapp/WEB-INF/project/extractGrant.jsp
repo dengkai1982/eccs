@@ -57,8 +57,19 @@
                         </td>
                     </tr>
                     <tr>
+                        <td class="left_column" style="width:120px;">剩余可提成金额</td>
+                        <td class="right_column">
+                            <c:choose>
+                                <c:when test="${empty requestScope.extractGrant}">
+                                    <currency:convert value="${projectAmountFlow.commissionAmount}"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <currency:convert value="${projectAmountFlow.commissionAmount-requestScope.extractGrant.totalGrantAmount}"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
                         <td class="left_column">入账备注</td>
-                        <td class="right_column" colspan="7">${projectAmountFlow.remark}</td>
+                        <td class="right_column" colspan="5">${projectAmountFlow.remark}</td>
                     </tr>
                 </tbody>
             </table>
@@ -121,7 +132,7 @@
 <script type="text/javascript">
     var commissionAmount=parseFloat($("#commissionAmountValue").html());
     var totalGrantAmount=parseFloat($("#extractGrantValue").html());
-    var maybeGrant=commissionAmount-totalGrantAmount;
+    var maybeGrant=commissionAmount;
     function pageReady(doc){
         $("#addEmployeeItem").click(function(){
             var excludeEmployee=$("input[name='excludeEmployee']").val();

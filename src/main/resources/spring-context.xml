@@ -70,6 +70,6 @@
         <property name="springContextHolder" ref="springContextHolder"/>
         <property name="threadExecuterQueue" ref="threadExecuterQueue"/>
         <property name="validateAnnotationScanner" ref="validateAnnotationScanner"/>
-        <property name="updateMenus" value="true"/>
+        <property name="updateMenus" value="false"/>
     </bean>
 </beans>

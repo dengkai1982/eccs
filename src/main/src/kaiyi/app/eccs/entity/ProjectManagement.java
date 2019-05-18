@@ -34,6 +34,8 @@ public class ProjectManagement extends LogicDeleteEntity {
     private int transferredAmount;
     //初始提成比例
     private float rate;
+    //计提基数
+    private float commissionRate;
     //计提比例
     private float proportion;
     //提成金额
@@ -42,6 +44,9 @@ public class ProjectManagement extends LogicDeleteEntity {
     //已完成提成金额
     @ICurrency
     private int finishCommission;
+
+    @ICurrency
+    private int surplusAmount;
     @Override
     protected JsonValuePolicy convertJsonValuePolicy() {
         return new JsonValuePolicy<ProjectManagement>() {
@@ -142,5 +147,21 @@ public class ProjectManagement extends LogicDeleteEntity {
 
     public void setFinishCommission(int finishCommission) {
         this.finishCommission = finishCommission;
+    }
+
+    public float getCommissionRate() {
+        return commissionRate;
+    }
+
+    public void setCommissionRate(float commissionRate) {
+        this.commissionRate = commissionRate;
+    }
+    @Transient
+    public int getSurplusAmount() {
+        return commissionAmount-finishCommission;
+    }
+
+    public void setSurplusAmount(int surplusAmount) {
+        this.surplusAmount = surplusAmount;
     }
 }

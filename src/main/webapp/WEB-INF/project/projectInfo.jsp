@@ -34,8 +34,10 @@
             <tr>
                 <td class="left_column">提成比例</td>
                 <td class="right_column">${entity.rateInteger}%</td>
+                <td class="left_column">计提基数</td>
+                <td class="right_column">${entity.commissionRate}</td>
                 <td class="left_column">项目参与人员</td>
-                <td class="right_column" colspan="3">${requestScope.joinEmployees}</td>
+                <td class="right_column">${requestScope.joinEmployees}</td>
             </tr>
             <tr>
                 <td class="left_column">计提比例</td>

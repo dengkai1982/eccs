@@ -39,4 +39,10 @@ public class ImportData {
         ProjectManagementService projectManagementService=sel.getBean(ProjectManagementService.class);
         projectManagementService.transferredAmountChange("15367309322550002");
     }
+
+    @Test
+    public void recomputer(){
+        ProjectManagementService pms=sel.getBean(ProjectManagementService.class);
+        pms.recomputer();
+    }
 }

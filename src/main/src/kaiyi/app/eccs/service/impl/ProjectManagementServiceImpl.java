@@ -48,6 +48,11 @@ public class ProjectManagementServiceImpl extends InjectDao<ProjectManagement> i
         float proportion=projectManagement.getProportion();
         Currency contractAmountCurrency=Currency.parseForNoDecimalPoint(contractAmount);
         Currency commission=CurrencyUtils.computerPercentage(proportion,contractAmountCurrency);
+        float commissionRate=projectManagement.getCommissionRate();
+        if(commissionRate<=0){
+            commissionRate=1;
+        }
+        commission=commission.divide(commissionRate,true);
         projectManagement.setCommissionAmount(commission.getNoDecimalPoint().intValue());
     }
 
@@ -122,6 +127,16 @@ public class ProjectManagementServiceImpl extends InjectDao<ProjectManagement> i
                     .getSingleResult();
             projectManagement.setFinishCommission(commissionAmount.intValue());
             updateObject(projectManagement);
+        }
+    }
+
+    @Override
+    public void recomputer() {
+        StreamCollection<ProjectManagement> pms=getEntitys();
+        for(ProjectManagement pm:pms){
+            setCommisssion(pm);
+            pm.setFinishCommission(0);
+            updateObject(pm);
         }
     }
 }

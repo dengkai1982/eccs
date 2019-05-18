@@ -26,6 +26,7 @@ public class ProjectAmountFlowServiceImpl extends InjectDao<ProjectAmountFlow> i
         float proportion=projectManagement.getProportion();
         flow.setProportion((int)proportion);
         Currency commission=CurrencyUtils.computerPercentage(proportion,Currency.parseForNoDecimalPoint(amount));
+        commission=commission.divide(projectManagement.getCommissionRate(),true);
         flow.setCommissionAmount(commission.getNoDecimalPoint().intValue());
         saveObject(flow);
     }

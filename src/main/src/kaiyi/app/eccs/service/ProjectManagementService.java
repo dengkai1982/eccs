@@ -35,4 +35,6 @@ public interface ProjectManagementService extends DatabaseQuery<ProjectManagemen
      */
     void transferredAmountChange(String entityId);
 
+    void recomputer();
+
 }

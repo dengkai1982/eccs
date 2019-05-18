@@ -107,8 +107,10 @@
                                 return dataValue+"%";
                             }
                         }},
+                    {name: 'commissionRate',sort:true,label:'计提基数'},
                     {name: 'commissionAmount',sort:true,label:'计提金额'},
                     {name: 'finishCommission',sort:true,label:'累计提成'},
+                    {name: 'surplusAmount',sort:true,label:'剩余金额'},
                     {name: 'createTime',sort:true,label:'创建时间'},
                     {name: 'oper', label: '操作',sort:false,html:true,width:140}
                 ],
@@ -164,7 +166,7 @@
                     recPerPage: parseInt('${pagination.maxResult}')
                 },
                 fixedLeftUntil:1,    // 固定左侧第一列
-                fixedRightFrom: 11  // 从第12列开始固定到右侧
+                fixedRightFrom: 13  // 从第12列开始固定到右侧
             },
             width:'100%',
             height:getDataGridHeight()

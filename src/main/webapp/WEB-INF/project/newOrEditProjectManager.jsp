@@ -45,16 +45,23 @@
             </div>
             <div class="form-group">
                 <label for="rate" class="col-sm-1 required">提成比例</label>
-                <div class="col-md-6 ref_contractAmount">
+                <div class="col-md-6 ref_rate">
                     <input type="number" class="form-control" value="${entity.rateInteger}" placeholder="请填写0-100的提成百分比"
                            validate="required:提成比例必须填写" id="rate" name="rate">
                 </div>
             </div>
             <div class="form-group">
-                <label for="rate" class="col-sm-1 required">计提比列</label>
-                <div class="col-md-6 ref_contractAmount">
+                <label for="proportion" class="col-sm-1 required">计提比列</label>
+                <div class="col-md-6 ref_proportion">
                     <input type="number" class="form-control" value="${entity.proportionInteger}" placeholder="请填写0-100的提成百分比"
                            validate="required:计提比例必须填写" id="proportion" name="proportion">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="commissionRate" class="col-sm-1 required">计提基数</label>
+                <div class="col-md-6 ref_commissionRate">
+                    <input type="number" class="form-control" value="${entity.commissionRate}" placeholder="请填写计提基数"
+                           validate="required:计提基数必须填写" id="commissionRate" name="commissionRate">
                 </div>
             </div>
             <div class="form-group">
